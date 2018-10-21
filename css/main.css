@@ -1,0 +1,20 @@
+table {
+	
+}
+td {
+	width: 40px;
+	height: 40px;
+	border: 1px solid #000;
+}
+.red {
+    background: red;
+}
+.blue {
+	background: blue;
+}
+.yellow {
+	background: yellow;
+}
+.green {
+	background: green;
+}
