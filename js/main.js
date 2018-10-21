@@ -1,4 +1,5 @@
 var main = {
+    level: 0,
     area: [
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -21,6 +22,37 @@ var main = {
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     ],
+
+    renderTable: function () {
+        var html = '';
+        html +=
+            '<div id="leftInfo" class="col-md-3">' +
+            '<p id="rowAmount">Полных строк: 0</p>' +
+            '<p id="level">Уровень: '+this.level+'</p>' +
+            '<p id="score">Счёт: 0</p>' +
+            '</div>';
+        html += '<div class="col-md-4">'
+        html += '<table>';
+        for (i = 0; i < this.area.length; i++) {
+            html += '<tr>';
+            for (j = 0; j < this.area[0].length; j++) {
+                html += '<td></td>';
+            }
+            html += '</tr>';
+        }
+        html += '</table>';
+        html += '</div>';
+        html +=
+            '<div id="rightInfo" class="col-md-3 rightInfo">' +
+            '<p>←: НАЛЕВО   →: НАПРАВО</p>' +
+            '<p>↑: ПОВОРОТ</p>' +
+            '<p>↓: УСКОРИТЬ 5: СБРОСИТЬ</p>' +
+            '<p>1: ПОКАЗАТЬ СЛЕДУЮЩУЮ</p>' +
+            '<p>0: СТЕРЕТЬ ЭТОТ ТЕКСТ</p>' +
+            '<p>ПРОБЕЛ - СБРОСИТЬ</p>' +
+            '</div>';
+        $('.container').append(html);
+    },
 
     getFigure: function() {
         var figure = [];
@@ -67,29 +99,89 @@ var main = {
         for (i = 0; i < 20; i++) {
             for (j = 0; j < 10; j++) {
                 className = this.colors[this.area[i][j]];
+                console.log(this.area[i][j]+' - '+className);
                 $("tr:eq("+i+") td:eq("+j+")").addClass(className);
             }
         }
         this.area;
     },
 
+    cellsCalculator: function () {
+        var red = 0, green = 0, blue = 0, yellow = 0;
+        for (i = 0; i < 20; i++) {
+            for (j = 0; j < 10; j++) {
+                if (this.area[i][j] == 1) {
+                    red++;
+                }
+                if (this.area[i][j] == 2) {
+                    green++;
+                }
+                if (this.area[i][j] == 3) {
+                    blue++;
+                }
+                if (this.area[i][j] == 4) {
+                    yellow++;
+                }
+            }
+        }
+        $('#colorsAmount').replaceWith('<p id="colorsAmount">Red: '+red+' green: '+green+' blue: '+blue+' yellow: '+yellow);
+    },
+
     addFigure: function () {
         var figure = this.getFigure();
         this.area[util.getRandomNum(0,20)][util.getRandomNum(0,10)] = util.getRandomNum(1,4);
         this.areaRender();
+        this.cellsCalculator();
     },
 
-    appRun: function () {
+    appRun: function (level) {
+        this.level = level;
         var figure = this.getFigure();
         this.addFigure();
     },
 
     init: function () {
+        this.renderTable();
         this.areaRender();
+    },
+
+    startGame: function (level) {
+        var timeOut = 0;
+        switch (level) {
+            case 0:
+                timeOut = 1500;
+                break;
+            case 1:
+                timeOut = 1300;
+                break;
+            case 2:
+                timeOut = 1200;
+                break;
+            case 3:
+                timeOut = 1000;
+                break;
+            case 4:
+                timeOut = 900;
+                break;
+            case 5:
+                timeOut = 800;
+                break;
+            case 6:
+                timeOut = 600;
+                break;
+            case 7:
+                timeOut = 450;
+                break;
+            case 8:
+                timeOut = 350;
+                break;
+            case 9:
+                timeOut = 200;
+                break;
+        }
+        main.init();
+        setInterval(function () {
+            main.appRun();
+        }, timeOut);
     }
 };
-
-main.init();
-setInterval(function () {
-    main.appRun();
-}, 10);

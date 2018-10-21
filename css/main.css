@@ -1,3 +1,39 @@
+body {
+    background: #2a2d29;
+    font-family: Terminal, sans-serif;
+    color: #5b8753;
+    font-size: 2em;
+    font-weight: 700;
+    letter-spacing: 1em;
+}
+.inputLevel:before {
+    content: '';
+    display: none;
+    position: relative;
+    left: 16px;
+    top: 10px;
+    width: 21px;
+    height: 14px;
+    background: #5b8753;
+    opacity: 1;
+    z-index: 3;
+    display: inline-block;
+    animation: cursor 1s infinite step-end;
+}
+@keyframes cursor {
+    50% { background: transparent; }
+}
+.contentCenter{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    flex-direction: column;
+}
+.startScreen {
+    display: inline-block;
+    position: relative;
+}
 table {
 	
 }
