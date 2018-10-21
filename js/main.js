@@ -73,13 +73,15 @@ var main = {
         this.area;
     },
 
-    renderFigure: function () {
+    addFigure: function () {
         var figure = this.getFigure();
-        
+        this.area[util.getRandomNum(0,20)][util.getRandomNum(0,10)] = util.getRandomNum(1,4);
+        this.areaRender();
     },
 
     appRun: function () {
-
+        var figure = this.getFigure();
+        this.addFigure();
     },
 
     init: function () {
@@ -90,4 +92,4 @@ var main = {
 main.init();
 setInterval(function () {
     main.appRun();
-}, 1000);
+}, 10);
