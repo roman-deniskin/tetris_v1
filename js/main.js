@@ -1,5 +1,8 @@
 var main = {
     level: 0,
+    angle: 0,
+    xDelta: 0,//Начальная координата смещения от верхней строки главной матрицы
+    yDelta: 5,//Начальная координата смещения от левого столбца главной матрицы
     area: [
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -54,6 +57,11 @@ var main = {
         $('.container').append(html);
     },
 
+    setRandomAngle: function () {
+        var angle = [0,90,180,240];
+        main.angle = angle[util.getRandomNum(0,3)];
+    },
+
     getFigure: function() {
         var figure = [];
         figure[0] = [
@@ -83,6 +91,7 @@ var main = {
             [3,3,0],
             [0,3,3]
         ];
+        this.setRandomAngle();
         return figure[util.getRandomNum(0,6)];
     },
 
@@ -96,20 +105,19 @@ var main = {
 
     areaRender: function () {
         var className = '';
-        for (i = 0; i < 20; i++) {
-            for (j = 0; j < 10; j++) {
+        for (i = 0; i < this.area.length; i++) {
+            for (j = 0; j < this.area[0].length; j++) {
                 className = this.colors[this.area[i][j]];
-                console.log(this.area[i][j]+' - '+className);
+                //console.log(this.area[i][j]+' - '+className);
                 $("tr:eq("+i+") td:eq("+j+")").addClass(className);
             }
         }
-        this.area;
     },
 
     cellsCalculator: function () {
         var red = 0, green = 0, blue = 0, yellow = 0;
-        for (i = 0; i < 20; i++) {
-            for (j = 0; j < 10; j++) {
+        for (i = 0; i < this.area.length; i++) {
+            for (j = 0; j < this.area[0].length; j++) {
                 if (this.area[i][j] == 1) {
                     red++;
                 }
@@ -124,12 +132,29 @@ var main = {
                 }
             }
         }
-        $('#colorsAmount').replaceWith('<p id="colorsAmount">Red: '+red+' green: '+green+' blue: '+blue+' yellow: '+yellow);
+        //$('#colorsAmount').replaceWith('<p id="colorsAmount">Red: '+red+' green: '+green+' blue: '+blue+' yellow: '+yellow);
     },
 
     addFigure: function () {
         var figure = this.getFigure();
-        this.area[util.getRandomNum(0,20)][util.getRandomNum(0,10)] = util.getRandomNum(1,4);
+        var yOffset = 0;
+        var xOffset = 5; // 5 - середина поля по оси x. Начинаем рисование фигуры всегда отсюда
+        var yOffsetFigCounter = 0;
+        var xOffsetFigCounter = 0;
+        var figureHeight = figure.length;
+        var figureWidth = figure[0].length;
+        for (i = 0; i < 20; i++) {
+            // Ось y
+            for (j = 0; j < 10; j++) {
+                // Ось y
+                if (this.area[i][j] != 0 || this.area[i][j] == undefined) {
+                    //alert('Figure on the down');
+                } else {
+                    this.area[i][j] = figure[i][j];
+                }
+            }
+        }
+        //this.area[util.getRandomNum(0,20)][util.getRandomNum(0,10)] = util.getRandomNum(1,4);
         this.areaRender();
         this.cellsCalculator();
     },
