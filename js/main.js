@@ -135,28 +135,37 @@ var main = {
         //$('#colorsAmount').replaceWith('<p id="colorsAmount">Red: '+red+' green: '+green+' blue: '+blue+' yellow: '+yellow);
     },
 
+    moveFigure: function () {
+
+    },
+
     addFigure: function () {
         var figure = this.getFigure();
         var yOffset = 0;
         var xOffset = 5; // 5 - середина поля по оси x. Начинаем рисование фигуры всегда отсюда
-        var yOffsetFigCounter = 0;
-        var xOffsetFigCounter = 0;
         var figureHeight = figure.length;
         var figureWidth = figure[0].length;
-        for (i = 0; i < 20; i++) {
-            // Ось y
-            for (j = 0; j < 10; j++) {
-                // Ось y
-                if (this.area[i][j] != 0 || this.area[i][j] == undefined) {
-                    //alert('Figure on the down');
-                } else {
-                    this.area[i][j] = figure[i][j];
+        for (yOffset; yOffset < 20; yOffset++) {
+            for (i = 0; i < figureHeight; i++) {
+                for (j = 0; j < figureWidth; j++) {
+                    if (this.area[i + yOffset][j + xOffset] !== 0) {
+                        //Offset - параметры отступа фигуры на экране
+                        //i, j - высота и длина фигуты на экране
+                        if (this.area[i + yOffset][j + xOffset] > 0) {
+                            return 'Field is full';
+                        }
+                        return 'Field is not exists';
+                    }
+                    else {
+                        this.area[i + yOffset][j + xOffset] = figure[i][j];
+                    }
                 }
             }
+            this.areaRender();
         }
         //this.area[util.getRandomNum(0,20)][util.getRandomNum(0,10)] = util.getRandomNum(1,4);
-        this.areaRender();
         this.cellsCalculator();
+        delete figure;
     },
 
     appRun: function (level) {
@@ -207,6 +216,6 @@ var main = {
         main.init();
         setInterval(function () {
             main.appRun();
-        }, timeOut);
+        }, timeOut);//Почему не происходит синхронного выполнения команд?
     }
 };
