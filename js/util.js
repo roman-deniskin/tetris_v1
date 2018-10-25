@@ -7,7 +7,12 @@ var util = {
         return Math.round(Math.random() * (max - min) + min);
     },
     
-    getKeyDownCode: function (code) {
-        
+    arrayClone: function (array) {
+        for (i in array) {
+            if (typeof array[i] == 'source')
+                this[i] = new this.arrayClone(array[i]);
+            else
+                this[i] = array[i];
+        }
     }
 };
