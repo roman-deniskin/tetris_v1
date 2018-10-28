@@ -1,8 +1,8 @@
 var main = {
     level: 0,
     angle: 0,
-    xDelta: 5, //Начальная координата смещения от верхней строки главной матрицы
-    yDelta: 0, //Начальная координата смещения от левого столбца главной матрицы. 5 - середина поля по оси x. Начинаем рисование фигуры всегда отсюда
+    xDelta: 5, //Начальная координата смещения текущей фигуры от верхней строки главной матрицы
+    yDelta: 0, //Начальная координата смещения текущей фигуры от левого столбца главной матрицы. 5 - середина поля по оси x. Начинаем рисование фигуры всегда отсюда
     figureHeight: 0, //Высота текущей фигуры
     figureWidth: 0, //Ширина текущей фигуры
     currentFigure: [],
@@ -143,7 +143,7 @@ var main = {
         //$('#colorsAmount').replaceWith('<p id="colorsAmount">Red: '+red+' green: '+green+' blue: '+blue+' yellow: '+yellow);
     },
 
-    moveDownFigure: function () {
+    changePosFigure: function () {
         this.areaCopy = this.area.slice();
         for (i = 0; i < 20; i++) {
             for (j = 0; j < 10; j++) {
@@ -153,24 +153,33 @@ var main = {
         if (this.figure !== []) {
             for (i = 0; i < this.figureHeight; i++) {
                 for (j = 0; j < this.figureWidth; j++) {
-                    if (this.area[i + this.yDelta][j + this.xDelta] !== 0) {
+                    if (this.area[i + this.yDelta][j + this.xDelta] !== 0 && this.area[i + this.yDelta][j + this.xDelta] !== undefined) {
                         //Offset - параметры отступа фигуры на экране
                         //i, j - высота и длина фигуты на экране
                         if (this.area[i + this.yDelta][j + this.xDelta] > 0 && this.figure !== []) {
                             this.figure = [];
-                            this.areaCopy = [];
+                            this.area = this.areaCopy.slice();
+                            //this.areaCopy = [];
                             return 'Field is full';
                         }
                         return 'Field is not exists';
                     }
                     else {
-                        this.area[i + this.yDelta][j + this.xDelta] = this.figure[i][j];
+                        if (this.area[i + this.yDelta][j + this.xDelta] === 0)
+                            this.area[i + this.yDelta][j + this.xDelta] = this.figure[i][j];
                     }
                 }
             }
-            this.yDelta++;
         } else if (!(isCreateNewFigure = this.addFigure())) {
             alert('Game over');
+        }
+        this.areaRender();
+    },
+
+    moveDownFigure: function () {
+        if ((this.yDelta+this.figure.length) < this.area.length) {
+            this.yDelta++;
+            this.changePosFigure();
         }
     },
 
@@ -179,28 +188,26 @@ var main = {
         this.figure = this.getFigure();
         this.figureHeight = main.figure.length;
         this.figureWidth = main.figure[0].length;
-        if (this.figure !== []) {
-            for (i = 0; i < this.figureHeight; i++) {
-                for (j = 0; j < this.figureWidth; j++) {
-                    if (this.area[i + this.yDelta][j + this.xDelta] !== 0) {
-                        //Offset - параметры отступа фигуры на экране
-                        //i, j - высота и длина фигуты на экране
-                        if (this.area[i + this.yDelta][j + this.xDelta] > 0) {
-                            alert('Field is full');
-                            return 'Field is full';
-                        }
-                        alert('Field is not exists');
-                        //return 'Field is not exists';
+        for (i = 0; i < this.figureHeight; i++) {
+            for (j = 0; j < this.figureWidth; j++) {
+                if (this.area[i + this.yDelta][j + this.xDelta] !== 0 && this.area[i + this.yDelta][j + this.xDelta] !== undefined) {
+                    //Offset - параметры отступа фигуры на экране
+                    //i, j - высота и длина фигуты на экране
+                    if (this.area[i + this.yDelta][j + this.xDelta] > 0) {
+                        //alert('Field is full');
+                        return 'Field is full';
                     }
-                    else {
-                        this.area[i + this.yDelta][j + this.xDelta] = this.figure[i][j];
-                    }
+                    alert('Field is not exists');
+                    //return 'Field is not exists';
+                }
+                else {
+                    this.area[i + this.yDelta][j + this.xDelta] = this.figure[i][j];
                 }
             }
         }
+
         //this.area[util.getRandomNum(0,20)][util.getRandomNum(0,10)] = util.getRandomNum(1,4);
         this.cellsCalculator();
-        delete figure;
     },
 
     appRun: function (level) {
@@ -216,7 +223,7 @@ var main = {
         var timeOut = 0;
         switch (level) {
             case 0:
-                timeOut = 1500;
+                timeOut = 10000;
                 break;
             case 1:
                 timeOut = 1300;
@@ -251,7 +258,15 @@ var main = {
         main.appRun();
         main.addFigure();
         setInterval(function () {
-            main.moveDownFigure();
+            if (main.yDelta+main.figure.length < main.area.length)
+                main.moveDownFigure();
+            else {
+                main.figure = main.addFigure();
+                main.xDelta = 5;
+                main.yDelta = 0;
+                main.addFigure();
+            }
+
         }, timeOut);//Почему не происходит синхронного выполнения команд?
         setInterval(function () {
             main.areaRender();
