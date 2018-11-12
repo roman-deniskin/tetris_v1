@@ -6,6 +6,7 @@ var main = {
         'blue',
         'yellow'
     ],
+    isPause: false,
     level: 0,
     angle: 0,
     xDelta: 5, //Начальная координата смещения текущей фигуры от верхней строки главной матрицы
@@ -13,8 +14,29 @@ var main = {
     figureHeight: 0, //Высота текущей фигуры
     figureWidth: 0, //Ширина текущей фигуры
     currentFigure: [],
-    areaCopy: [],
     area: [
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    ],
+    areaCopy: [
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -40,7 +62,7 @@ var main = {
     renderTable: function () {
         var html = '';
         html +=
-            '<div id="leftInfo" class="col-md-3">' +
+            '<div id="leftInfo" class="col-md-3 cmdText">' +
             '<p id="rowAmount">Полных строк: 0</p>' +
             '<p id="level">Уровень: '+this.level+'</p>' +
             '<p id="score">Счёт: 0</p>' +
@@ -57,7 +79,7 @@ var main = {
         html += '</table>';
         html += '</div>';
         html +=
-            '<div id="rightInfo" class="col-md-3 rightInfo">' +
+            '<div id="rightInfo" class="col-md-3 rightInfo cmdText">' +
             '<p>←: НАЛЕВО   →: НАПРАВО</p>' +
             '<p>↑: ПОВОРОТ</p>' +
             '<p>↓: УСКОРИТЬ 5: СБРОСИТЬ</p>' +
@@ -103,7 +125,7 @@ var main = {
             [0,3,3]
         ];
         this.setRandomAngle();
-        return figure[util.getRandomNum(0,6)];
+        return figure[util.getRandomNum(0,6)].slice();
         //return figure[0];
     },
 
@@ -113,9 +135,9 @@ var main = {
             for (j = 0; j < this.area[0].length; j++) {
                 className = this.colors[this.area[i][j]];
                 //console.log(this.area[i][j]+' - '+className);
-                if (this.area[i][j] > 0)
+                if (this.area[i][j] > 0 || this.areaCopy[i][j] > 0)
                     $("tr:eq("+i+") td:eq("+j+")").addClass(className);
-                if (this.area[i][j] === 0)
+                if (this.area[i][j] === 0 && this.areaCopy[i][j] === 0)
                     $("tr:eq("+i+") td:eq("+j+")").removeClass();
             }
         }
@@ -129,13 +151,16 @@ var main = {
     },
 
     addFigure: function () {
-        this.areaCopy = this.area.slice(); //Копируем поле до изменений
-        this.figure = this.getFigure();
+        if (main.figure === [] || main.figure === undefined)
+            main.figure = this.getFigure();
+        this.areaCopy = JSON.parse(JSON.stringify(this.area)); //Копируем поле до изменений
         this.figureHeight = main.figure.length;
         this.figureWidth = main.figure[0].length;
         for (i = 0; i < this.figureHeight; i++) {
             for (j = 0; j < this.figureWidth; j++) {
-                if (this.area[i + this.yDelta][j + this.xDelta] !== 0 && this.area[i + this.yDelta][j + this.xDelta] !== undefined) {
+                if (this.area[i + this.yDelta][j + this.xDelta] !== 0 &&
+                    this.yDelta+this.figure.length < this.area.length &&
+                    this.xDelta+this.figure[0].length < this.area[0].length) {
                     //Offset - параметры отступа фигуры на экране
                     //i, j - высота и длина фигуты на экране
                     if (this.area[i + this.yDelta][j + this.xDelta] > 0) {
@@ -146,7 +171,7 @@ var main = {
                     //return 'Field is not exists';
                 }
                 else {
-                    this.area[i + this.yDelta][j + this.xDelta] = this.figure[i][j];
+                    this.area[i + this.yDelta][j + this.xDelta] = JSON.parse(JSON.stringify(this.figure[i][j]));
                 }
             }
         }
@@ -154,31 +179,37 @@ var main = {
         util.cellsCalculator();
     },
 
+
+
     changePosFigure: function () {
-        this.areaCopy = this.area.slice();
         for (i = 0; i < 20; i++) {
             for (j = 0; j < 10; j++) {
-                this.area[i][j] = 0; //Обнуляем изменения основного поля
+                this.areaCopy[i][j] = 0; //Обнуляем изменения основного поля
             }
         }
         if (this.figure !== []) {
             for (i = 0; i < this.figureHeight; i++) {
                 for (j = 0; j < this.figureWidth; j++) {
-                    if (this.area[i + this.yDelta][j + this.xDelta] !== 0 && this.area[i + this.yDelta][j + this.xDelta] !== undefined) {
+                    if (this.yDelta+this.figure.length >= this.areaCopy.length &&
+                        this.xDelta+this.figure[0].length >= this.areaCopy[0].length) {
                         //Offset - параметры отступа фигуры на экране
                         //i, j - высота и длина фигуты на экране
-                        if (this.area[i + this.yDelta][j + this.xDelta] > 0 && this.figure !== []) {
+                        if (this.area[i + this.yDelta][j + this.xDelta] !== 0 && this.figure !== []) {
                             this.figure = [];
-                            this.area = this.areaCopy.slice();
+                            this.area = JSON.parse(JSON.stringify(this.areaCopy));
                             //this.areaCopy = [];
                             return 'Field is full';
                         }
                         return 'Field is not exists';
                     }
                     else {
-                        if (this.area[i + this.yDelta][j + this.xDelta] === 0)
-                            this.area[i + this.yDelta][j + this.xDelta] = this.figure[i][j];
+                        if (this.areaCopy[i + this.yDelta][j + this.xDelta] === 0) {
+                            this.areaCopy[i + this.yDelta][j + this.xDelta] = JSON.parse(JSON.stringify(this.figure[i][j]));
+                            //console.dir(typeof(this.areaCopy[i + this.yDelta][j + this.xDelta]));
+                        }
                     }
+                    if (this.area[i + this.yDelta][j + this.xDelta] !== 0)
+                        this.area[i + this.yDelta][j + this.xDelta] = JSON.parse(JSON.stringify(this.areaCopy[i + this.yDelta][j + this.xDelta]));
                 }
             }
         } else if (!(isCreateNewFigure = this.addFigure())) {
@@ -193,7 +224,7 @@ var main = {
     },
 
     startGame: function (level) {
-        var timeOut = util.getTimeOut(level);
+        this.timeOut = util.getTimeOut(level);
 
         main.init();
         main.addFigure();
@@ -201,13 +232,15 @@ var main = {
             if (main.yDelta+main.figure.length < main.area.length)
                 main.moveDownFigure();
             else {
-                main.figure = main.addFigure();
-                main.xDelta = 5;
-                main.yDelta = 0;
-                main.addFigure();
+                if (!this.isPause) {
+                    main.figure = main.addFigure();
+                    main.xDelta = 5;
+                    main.yDelta = 0;
+                    main.addFigure();
+                }
             }
 
-        }, timeOut);
+        }, this.timeOut);
         setInterval(function () {
             main.areaRender();
         }, 100);

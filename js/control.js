@@ -24,6 +24,13 @@ var control = {
         }
     },
 
+    changePauseState: function () {
+        if (main.isPause == false)
+            main.isPause = true;
+        else
+            main.isPause = false;
+    },
+
     moveFigure: function (code) {
         switch (code) {
             case 37:
@@ -42,7 +49,10 @@ var control = {
                 //up
                 break;
             case 32:
-                // space
+            case 19:
+                alert('ddd');
+                // space and pause
+                this.changePauseState();
                 break;
         }
     }

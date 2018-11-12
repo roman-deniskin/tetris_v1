@@ -55,5 +55,13 @@ var util = {
     
     colorCell: function () {
         main.area[util.getRandomNum(0,main.area.length)][util.getRandomNum(0,main.area[0].length)] = util.getRandomNum(1,main.colors.length);
+    },
+    
+    cellsForeach: function () {
+        for (i = 0; i < main.figureHeight; i++) {
+            for (j = 0; j < main.figureWidth; j++) {
+
+            }
+        }
     }
 };

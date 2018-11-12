@@ -1,6 +1,10 @@
+@font-face {
+    font-family: Pixel; /* Имя шрифта */
+    src: url(font.ttf); /* Путь к файлу со шрифтом */
+}
 body {
     background: #2a2d29;
-    font-family: Terminal, sans-serif;
+    font-family: Pixel, Terminal, sans-serif;
     color: #5b8753;
     font-size: 2em;
     font-weight: 700;
@@ -53,4 +57,7 @@ td {
 }
 .green {
 	background: green;
+}
+.cmdText {
+    letter-spacing: 0.2em;
 }
